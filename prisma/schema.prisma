@@ -1,0 +1,100 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum role{
+buyer
+seller
+admin
+superAdmin
+}
+
+enum status{
+  active
+  banned
+  warning
+  pending
+}
+
+enum BisnisType{
+  individual
+  company
+  partnership
+}
+
+
+model User{
+  id String @id @default(uuid())
+  name String  @db.VarChar(200)
+  email String @unique @db.VarChar(100)
+  password String
+  role role @default(buyer)
+  status status @default(pending)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // relasi
+  sellerProfile Seller?
+
+
+// nama database
+  @@map("m_users")
+}
+
+
+// tabel seller_profile
+model Seller{
+  id String @id @default(uuid())
+  nama_usaha String @db.VarChar(255)
+  tipe_usaha BisnisType @default(individual)
+  deskripsi String?
+  website String?
+
+  // info
+  no_tlp String @unique
+  address String
+  city String
+  province String
+  postalCode String?
+  country String @default("indonesia")
+
+  // BANK INFO
+  bankName String
+  bankAccount String
+  AccountHolder String
+
+
+  // status
+  status status @default(pending)
+  rejectionReason String?
+  verifiedAt DateTime?
+  verifiedBy String?
+
+  // document
+  KTP String?
+
+  isActive Boolean @default(true)
+  commissionRate Float @default(0.05)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // relasi
+    userId String @unique
+    user User @relation(fields: [userId],references: [id])
+
+
+  @@map("m_seller_profile")
+}
