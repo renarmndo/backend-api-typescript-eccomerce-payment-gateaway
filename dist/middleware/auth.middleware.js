@@ -8,7 +8,7 @@ export const AuthMiddleware = (req, res, next) => {
         }
         const token = authHeader.split(" ")[1];
         // varifikasi token
-        const secret = process.env.JWT_TOKEN;
+        const secret = process.env.JWT_SECRET;
         const decoded = jwt.verify(token, secret);
         req.user = decoded;
         next();

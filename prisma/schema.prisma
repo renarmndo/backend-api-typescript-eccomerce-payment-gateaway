@@ -48,6 +48,12 @@ model User{
   // relasi
   sellerProfile Seller?
 
+  // user create categori
+  categories CategoryProduct[]
+
+  // relasi order
+  order Order[]
+
 
 // nama database
   @@map("m_users")
@@ -73,7 +79,7 @@ model Seller{
   // BANK INFO
   bankName String
   bankAccount String
-  AccountHolder String
+  accountHolder String
 
 
   // status
@@ -95,6 +101,85 @@ model Seller{
     userId String @unique
     user User @relation(fields: [userId],references: [id])
 
+    products ProductSeller[]
+
 
   @@map("m_seller_profile")
+}
+
+
+model CategoryProduct {
+  id String @id @default(cuid())
+  name String @db.VarChar(255) @unique
+
+  user User @relation(fields: [userId],references: [id])
+
+  userId String
+  products ProductSeller[]
+
+
+  @@map("m_category_products")
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  SOLD_OUT
+}
+
+
+model ProductSeller{
+  id String @id @default(uuid())
+  product_name String @db.VarChar(255)
+  description String?
+  price Decimal @db.Decimal(10,2) @default(0)
+  stock Int
+  image_url String?
+  status ProductStatus @default(INACTIVE)
+  discount Decimal? @db.Decimal(5,2)
+  rating Decimal? @db.Decimal(2,1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  categori_id String
+  seller_id String
+  
+
+  // relasi
+
+  category CategoryProduct @relation(fields: [categori_id],references: [id])
+
+  seller Seller @relation(fields: [seller_id],references: [id])
+
+  orders Order[]
+
+@@map("m_seller_products")
+}
+
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELED
+}
+
+model Order{
+  id String @id @default(uuid())
+  buyerId String
+  productId String
+  qty Int
+  amount Decimal @db.Decimal(10,2) 
+  status OrderStatus @default(PENDING)
+
+  // xendit
+  invoiceId String @unique
+  invoiceUrl String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  buyer User @relation(fields: [buyerId],references: [id])
+  product ProductSeller @relation(fields: [productId],references: [id])
+
+  @@map("m_orders")
 }

@@ -23,7 +23,7 @@ export const AuthMiddleware = (
     const token = authHeader.split(" ")[1] as string;
 
     // varifikasi token
-    const secret = process.env.JWT_TOKEN as string;
+    const secret = process.env.JWT_SECRET as string;
 
     const decoded = jwt.verify(token, secret);
 

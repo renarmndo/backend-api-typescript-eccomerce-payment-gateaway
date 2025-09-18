@@ -1,4 +1,4 @@
-import { AuthServices } from "../services/auth.services.js";
+import { AuthServices } from "../services/auth.service.js";
 import { sendError, sendResponse } from "../utils/response.utils.js";
 import { CustomError } from "../utils/CustomerError.utils.js";
 export const RegisterController = async (req, res) => {
